@@ -1,20 +1,50 @@
 "use client";
 
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { useQuery } from "react-query";
 
 const StockPage = () => {
-  const [stocks, setStocks] = useState([]);
+  // const [stocks, setStocks] = useState([]);
 
   const { register, handleSubmit, reset } = useForm();
 
   // post request for getting data from db
-  useEffect(() => {
-    fetch("/api/product")
-      .then((res) => res.json())
-      .then((data) => setStocks(data));
-  }, []);
+  // useEffect(() => {
+  //   // fetch("/api/product")
+  //   //   .then((res) => res.json())
+  //   //   .then((data) => setStocks(data));
+  //   const fetchDatas = async () => {
+  //     const res = await fetch("/api/product");
+  //     const data = await res.json();
+  //     setStocks(data);
+  //   };
+  //   fetchDatas();
+  // }, []);
+
+  const {
+    data: stocks = [],
+    refetch,
+    isLoading,
+    error,
+  } = useQuery({
+    queryFn: async () => {
+      // const res = await fetch("/api/product");
+      // const data = await res.json();
+      // return data;
+      const res = await axios("/api/product");
+      return res.data;
+    },
+  });
+
+  if (isLoading)
+    return (
+      <h2 className="text-4xl font-semibold text-green-700 text-center mt-10">Loading...</h2>
+    );
+
+  // console.log(stocks);
 
   // form onsubmit function
   const onSubmit = async (data) => {
@@ -32,8 +62,10 @@ const StockPage = () => {
     });
 
     if (response.ok) {
-      console.log("Product added successfully!!");
+      // console.log("Product added successfully!!");
+      refetch();
       toast.success("Product added successfully!");
+      reset();
     }
   };
 
@@ -130,13 +162,13 @@ const StockPage = () => {
               <tbody className="text-gray-600 text-sm font-light">
                 {stocks.map((stock, i) => (
                   <tr
-                    key={stock.id}
+                    key={stock?._id}
                     className="border-b border-gray-200 hover:bg-gray-100"
                   >
                     <td className="py-3 px-6 text-left">{i + 1}</td>
-                    <td className="py-3 px-6 text-left">{stock.name}</td>
-                    <td className="py-3 px-6 text-center">{stock.quantity}</td>
-                    <td className="py-3 px-6 text-center">${stock.price}</td>
+                    <td className="py-3 px-6 text-left">{stock?.name}</td>
+                    <td className="py-3 px-6 text-center">{stock?.quantity}</td>
+                    <td className="py-3 px-6 text-center">${stock?.price}</td>
                     <td className="py-3 px-6 text-center">
                       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
                         Edit
