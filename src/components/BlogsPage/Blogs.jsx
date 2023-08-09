@@ -3,7 +3,7 @@ import SingleBlog from "./SingleBlog";
 
 const Blogs = async () => {
   const blogs = await getAllBlogs();
-  console.log(blogs, "blogs");
+//   console.log(blogs, "blogs");
   return (
     <div>
       {blogs.map((blog) => (
